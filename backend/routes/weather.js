@@ -3,7 +3,7 @@ import axios from "axios";
 
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/", async (req, res, next) => {
   try {
     const city = req.query.city;
 
@@ -35,10 +35,7 @@ router.get("/", async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Unable to fetch weather",
-    });
+    next(error); 
   }
 });
 
