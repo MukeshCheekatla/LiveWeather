@@ -7,13 +7,15 @@ function App() {
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [history, setHistory] = useState([]);
+  const [history, setHistory] = useState(() => {
+    return JSON.parse(localStorage.getItem("history")) || [];
+  });
 
   // Load saved history on app start
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem("history")) || [];
-    setHistory(saved);
-  }, []);
+    return saved;
+  });
 
   // Save new search to history
   function addToHistory(cityName) {
@@ -107,7 +109,13 @@ function App() {
         )}
 
         {/* History List */}
-        <HistoryList history={history} onSelect={(c) => { setCity(c); getWeather(); }} />
+        <HistoryList
+          history={history}
+          onSelect={(c) => {
+            setCity(c);
+            getWeather();
+          }}
+        />
       </div>
     </div>
   );
