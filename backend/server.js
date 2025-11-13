@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+
 import weatherRoute from "./routes/weather.js";
 import { requestLogger } from "./middleware/logger.js";
 import { errorHandler } from "./middleware/errorHandler.js";
@@ -13,14 +14,11 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// log every request
 app.use(requestLogger);
 
 app.use("/weather", weatherRoute);
 app.use("/health", healthRoute);
 
-
-// error handling middleware (always last)
 app.use(errorHandler);
 
 app.listen(PORT, () => {
