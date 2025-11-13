@@ -4,6 +4,7 @@ import cors from "cors";
 import weatherRoute from "./routes/weather.js";
 import { requestLogger } from "./middleware/logger.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import healthRoute from "./routes/health.js";
 
 dotenv.config();
 const app = express();
@@ -16,6 +17,8 @@ app.use(express.json());
 app.use(requestLogger);
 
 app.use("/weather", weatherRoute);
+app.use("/health", healthRoute);
+
 
 // error handling middleware (always last)
 app.use(errorHandler);
