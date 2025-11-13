@@ -1,13 +1,12 @@
 import express from "express";
 import dotenv from "dotenv";
+import weatherRoute from "./routes/weather.js";
 
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.get("/", (req, res) => {
-  res.json({ message: "Weather API backend running" });
-});
+app.use("/weather", weatherRoute);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
