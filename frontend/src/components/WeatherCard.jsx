@@ -1,3 +1,5 @@
+
+
 function getEmoji(condition) {
   const map = {
     Clear: "☀️",
@@ -40,6 +42,8 @@ function WeatherCard({ data }) {
         <p>Humidity: {data.humidity}%</p>
         <p>Wind: {data.wind} km/h</p>
       </div>
+
+      
 
     </div>
   );

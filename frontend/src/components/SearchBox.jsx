@@ -1,10 +1,17 @@
 function SearchBox({ city, setCity, getWeather }) {
+  function handleKeyPress(e) {
+    if (e.key === "Enter") {
+      getWeather();
+    }
+  }
+
   return (
     <div className="flex gap-3 mb-4">
       <input
         type="text"
         value={city}
         onChange={(e) => setCity(e.target.value)}
+        onKeyDown={handleKeyPress}   // <-- ENTER support added
         placeholder="Enter city"
         className="w-full px-4 py-2 border rounded-lg focus:outline-none shadow-sm"
       />
