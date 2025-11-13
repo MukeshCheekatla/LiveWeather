@@ -1,4 +1,4 @@
-# 🌤️ WeatherNow
+# 🌤️ LiveWeather
 
 WeatherNow is a full-stack weather web application built with **Node.js + Express** and **React + Tailwind**, using the **OpenWeather API** to fetch and display real-time weather data. It provides a clean, responsive UI with background visuals for a better experience.
 
