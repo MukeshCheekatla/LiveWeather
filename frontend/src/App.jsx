@@ -18,39 +18,42 @@ function App() {
     setLoading(false); // Stops loading
   }
   function getLocationWeather() {
-  if (!navigator.geolocation) {
-    alert("Geolocation not supported");
-    return;
+    if (!navigator.geolocation) {
+      alert("Geolocation not supported");
+      return;
+    }
+
+    setLoading(true);
+    setWeather(null);
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        console.log("LAT:", latitude, "LON:", longitude);
+
+        const res = await fetch(
+          `http://localhost:5000/weather/geo?lat=${latitude}&lon=${longitude}`
+        );
+
+        const data = await res.json();
+
+        setWeather(data);
+        setLoading(false);
+      },
+      (err) => {
+        console.error("GEO ERROR:", err);
+        alert("Error getting location");
+        setLoading(false);
+      }
+    );
   }
 
-  setLoading(true);
-  setWeather(null);
-
-  navigator.geolocation.getCurrentPosition(
-    async (position) => {
-      const { latitude, longitude } = position.coords;
-      console.log("LAT:", latitude, "LON:", longitude);
-
-      const res = await fetch(
-        `http://localhost:5000/weather/geo?lat=${latitude}&lon=${longitude}`
-      );
-
-      const data = await res.json();
-
-      setWeather(data);
-      setLoading(false);
-    },
-    (err) => {
-      console.error("GEO ERROR:", err);
-      alert("Error getting location");
-      setLoading(false);
-    }
-  );
-}
-
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-blue-200 flex items-center justify-center p-5">
+    <div
+      className="min-h-screen flex items-center justify-center p-5 bg-cover bg-center"
+      style={{ backgroundImage: "url('/bg.jpg')" }}
+    >
+    
       <div className="bg-white shadow-2xl rounded-2xl p-8 max-w-md w-full">
         <h1 className="text-3xl font-bold text-center mb-6 text-blue-700">
           Live Weather App
@@ -64,7 +67,7 @@ function App() {
         >
           Use My Location
         </button>
-        
+
         {loading && (
           <div className="flex justify-center mt-6">
             <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
