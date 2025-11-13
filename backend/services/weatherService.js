@@ -1,13 +1,19 @@
 import axios from "axios";
 import { BASE_URL } from "../config/apiConfig.js";
+import { getCache, setCache } from "../utils/cache.js";
+
 
 // CITY SEARCH
 export async function getWeatherData(city) {
-  const url = `${BASE_URL}/weather?q=${city}&units=metric&appid=${process.env.WEATHER_API_KEY}`;
+  const cacheKey = `city-${city.toLowerCase()}`;
+  const cached = getCache(cacheKey);
 
+  if (cached) return cached;
+
+  const url = `${BASE_URL}/weather?q=${city}&units=metric&appid=${process.env.WEATHER_API_KEY}`;
   const res = await axios.get(url);
 
-  return {
+  const data = {
     city: res.data.name,
     temp: res.data.main.temp,
     humidity: res.data.main.humidity,
@@ -16,15 +22,23 @@ export async function getWeatherData(city) {
     description: res.data.weather[0].description,
     icon: res.data.weather[0].icon,
   };
+
+  setCache(cacheKey, data);
+  return data;
 }
+
 
 // NEW: COORDINATES SEARCH
 export async function getWeatherByCoords(lat, lon) {
-  const url = `${BASE_URL}/weather?lat=${lat}&lon=${lon}&units=metric&appid=${process.env.WEATHER_API_KEY}`;
+  const cacheKey = `geo-${lat}-${lon}`;
+  const cached = getCache(cacheKey);
 
+  if (cached) return cached;
+
+  const url = `${BASE_URL}/weather?lat=${lat}&lon=${lon}&units=metric&appid=${process.env.WEATHER_API_KEY}`;
   const res = await axios.get(url);
 
-  return {
+  const data = {
     city: res.data.name,
     temp: res.data.main.temp,
     humidity: res.data.main.humidity,
@@ -33,4 +47,8 @@ export async function getWeatherByCoords(lat, lon) {
     description: res.data.weather[0].description,
     icon: res.data.weather[0].icon,
   };
+
+  setCache(cacheKey, data);
+  return data;
 }
+

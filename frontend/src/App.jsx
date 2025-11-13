@@ -1,22 +1,45 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SearchBox from "./components/SearchBox";
 import WeatherCard from "./components/WeatherCard";
+import HistoryList from "./components/HistoryList";
 
 function App() {
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [history, setHistory] = useState([]);
+
+  // Load saved history on app start
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem("history")) || [];
+    setHistory(saved);
+  }, []);
+
+  // Save new search to history
+  function addToHistory(cityName) {
+    let updated = [cityName, ...history.filter((item) => item !== cityName)];
+    updated = updated.slice(0, 5); // store only last 5
+
+    setHistory(updated);
+    localStorage.setItem("history", JSON.stringify(updated));
+  }
 
   async function getWeather() {
-    setLoading(true); // Start the  loading
-    setWeather(null); // Clears old data
+    if (!city.trim()) return;
+
+    setLoading(true);
+    setWeather(null);
 
     const res = await fetch(`http://localhost:5000/weather?city=${city}`);
     const data = await res.json();
 
     setWeather(data);
-    setLoading(false); // Stops loading
+    setLoading(false);
+
+    // Add successful search to history
+    if (data.success) addToHistory(city);
   }
+
   function getLocationWeather() {
     if (!navigator.geolocation) {
       alert("Geolocation not supported");
@@ -39,6 +62,8 @@ function App() {
 
         setWeather(data);
         setLoading(false);
+
+        if (data.success) addToHistory(data.data.city);
       },
       (err) => {
         console.error("GEO ERROR:", err);
@@ -53,7 +78,6 @@ function App() {
       className="min-h-screen flex items-center justify-center p-5 bg-cover bg-center"
       style={{ backgroundImage: "url('/bg.jpg')" }}
     >
-    
       <div className="bg-white shadow-2xl rounded-2xl p-8 max-w-md w-full">
         <h1 className="text-3xl font-bold text-center mb-6 text-blue-700">
           Live Weather App
@@ -81,6 +105,9 @@ function App() {
             City not found
           </p>
         )}
+
+        {/* History List */}
+        <HistoryList history={history} onSelect={(c) => { setCity(c); getWeather(); }} />
       </div>
     </div>
   );
