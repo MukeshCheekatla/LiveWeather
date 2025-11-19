@@ -3,6 +3,9 @@ import SearchBox from "./components/SearchBox";
 import WeatherCard from "./components/WeatherCard";
 import HistoryList from "./components/HistoryList";
 
+const API_URL = import.meta.env.VITE_API_URL;
+
+
 function App() {
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState(null);
@@ -13,9 +16,10 @@ function App() {
 
   // Load saved history on app start
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("history")) || [];
-    return saved;
-  });
+  const saved = JSON.parse(localStorage.getItem("history")) || [];
+  setHistory(saved);
+}, []);
+
 
   // Save new search to history
   function addToHistory(cityName) {
@@ -32,13 +36,12 @@ function App() {
     setLoading(true);
     setWeather(null);
 
-    const res = await fetch(`http://localhost:5000/weather?city=${city}`);
+    const res = await fetch(`${API_URL}/weather?city=${city}`);
     const data = await res.json();
 
     setWeather(data);
     setLoading(false);
 
-    // Add successful search to history
     if (data.success) addToHistory(city);
   }
 
@@ -54,10 +57,9 @@ function App() {
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         const { latitude, longitude } = position.coords;
-        console.log("LAT:", latitude, "LON:", longitude);
 
         const res = await fetch(
-          `http://localhost:5000/weather/geo?lat=${latitude}&lon=${longitude}`
+          `${API_URL}/weather/geo?lat=${latitude}&lon=${longitude}`
         );
 
         const data = await res.json();
@@ -108,7 +110,6 @@ function App() {
           </p>
         )}
 
-        {/* History List */}
         <HistoryList
           history={history}
           onSelect={(c) => {
